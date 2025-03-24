@@ -195,7 +195,7 @@
 
 <body>
     <h1>Hangman Game <span>( <span class="blue-text">Time Left: </span><span class="red-text"><span id="timer">30</span>s</span> )</span></h1>
-    <div id="question">The capital city of Scotland is  ______.</div>
+    <div id="question">The capital city of Scotland is <span id="hidden-word">______</span>.</div>
     <div id="word-display"></div>
     <div id="letter-buttons"></div>
     <div id="hangman-container">
@@ -229,6 +229,12 @@
         let timeLeft = 30;
         const timerElement = document.getElementById('timer');
 
+        const correctSound = new Audio('https://assets.mixkit.co/active_storage/sfx/212/212.wav');
+        const wrongSound = new Audio('https://static.bandlab.com/on-demand-revisions/f29f3558-2a24-e0a7-8381-3ac90de2d622/f29f3558-2a24-e0a7-8381-3ac90de2d622-mp3-44100-16bit-320kbps.mp3');
+        const winSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2065/2065.wav');
+        const loseSound = new Audio('https://assets.mixkit.co/active_storage/sfx/470/470.wav');
+        const countdownSound = new Audio('https://assets.mixkit.co/active_storage/sfx/921/921.wav');
+
         function displayWord() {
             let display = "";
             for (let letter of wordToGuess) {
@@ -261,9 +267,12 @@
             if (!wordToGuess.toLowerCase().includes(guess)) {
                 wrongGuesses++;
                 drawHangman();
+                wrongSound.play();
                 if (wrongGuesses === maxWrongGuesses) {
                     showResult(false);
                 }
+            } else {
+                correctSound.play();
             }
 
             if (!guessedLetters.includes(guess)) {
@@ -295,12 +304,14 @@
                 document.querySelector('.you-lose').style.display = 'none';
                 document.querySelector('.answer-label').style.display = 'none';
                 document.querySelector('.answer-word').style.display = 'none';
+                winSound.play();
             } else {
                 document.querySelector('.you-win').style.display = 'none';
                 document.querySelector('.congratulations').style.display = 'none';
                 document.querySelector('.you-lose').style.display = 'block';
                 document.querySelector('.answer-label').style.display = 'inline';
                 document.querySelector('.answer-word').textContent = wordToGuess;
+                loseSound.play();
             }
         }
 
@@ -308,6 +319,9 @@
             const timerInterval = setInterval(() => {
                 timeLeft--;
                 timerElement.textContent = timeLeft;
+                if (timeLeft === 15) {
+                    countdownSound.play();
+                }
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     if (!isGameOver) {
@@ -323,5 +337,4 @@
     </script>
 </body>
 
-</html>
-    
+</html>    
